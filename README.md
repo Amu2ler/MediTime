@@ -24,6 +24,8 @@ Ce projet est réalisé dans le cadre d’un **projet universitaire Laravel**.
 - **Blade**
 - **Laravel Breeze**
 
+Laravel Breeze a été utilisé pour fournir une base d’authentification sécurisée (login, register, sessions), afin de se concentrer sur la logique métier du projet plutôt que sur du code boilerplate.
+
 ---
 
 ## 🚀 Installation (local)
