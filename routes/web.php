@@ -6,8 +6,11 @@ use App\Http\Controllers\DoctorProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : view('welcome');
 });
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');

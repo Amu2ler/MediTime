@@ -6,6 +6,7 @@
 
         <title>{{ config('app.name', 'MediTime') }}</title>
 
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -89,10 +90,21 @@
                             </a>
 
                             @if(auth()->user()->role === 'doctor')
-                                <a class="underline underline-offset-4" href="{{ route('doctor.profile.create') }}">
-                                    Créer mon profil médecin
+                                @if(auth()->user()->doctorProfile)
+                                    <a class="underline underline-offset-4" href="{{ route('doctor.profile.edit') }}">
+                                        Modifier mon profil médecin
+                                    </a>
+                                @else
+                                    <a class="underline underline-offset-4" href="{{ route('doctor.profile.create') }}">
+                                        Créer mon profil médecin
+                                    </a>
+                                @endif
+
+                                <a class="underline underline-offset-4" href="{{ route('specialties.index') }}">
+                                    Gérer les spécialités
                                 </a>
                             @endif
+
                         </div>
                     @endauth
                 </div>
