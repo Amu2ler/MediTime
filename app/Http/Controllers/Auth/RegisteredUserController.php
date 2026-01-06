@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Specialty;
+use App\Models\DoctorProfile;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +21,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'specialties' => Specialty::all(),
+        ]);
     }
 
     /**
@@ -31,15 +35,25 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'role' => ['required', 'string', 'in:patient,doctor,admin'],
+            'specialty_id' => ['nullable', 'required_if:role,doctor', 'exists:specialties,id'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'role' => $request->role,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($user->role === 'doctor') {
+            DoctorProfile::create([
+                'user_id' => $user->id,
+                'specialty_id' => (int) $request->input('specialty_id'),
+            ]);
+        }
 
         event(new Registered($user));
 

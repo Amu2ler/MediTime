@@ -9,6 +9,37 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Rôle')" />
+            <select name="role" id="role" class="mt-1 block w-full">
+                <option value="">-- Choisir un rôle --</option>
+                <option value="patient" {{ old('role') === 'patient' ? 'selected' : '' }}>Patient</option>
+                <option value="doctor" {{ old('role') === 'doctor' ? 'selected' : '' }}>Médecin</option>
+                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Administrateur</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <!-- Select spécialité (caché par défaut) -->
+        <div class="mt-4 hidden" id="specialty-div">
+            <x-input-label for="specialty_id" value="Spécialité" />
+            <select name="specialty_id" id="specialty_id" class="mt-1 block w-full">
+                <option value="">-- Choisir une spécialité --</option>
+                @foreach($specialties as $specialty)
+                    <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('specialty_id')" class="mt-2" />
+        </div>
+
+        <script>
+        document.getElementById('role').addEventListener('change', function () {
+            document.getElementById('specialty-div')
+                .classList.toggle('hidden', this.value !== 'doctor');
+        });
+        </script>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />

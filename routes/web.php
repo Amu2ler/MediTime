@@ -29,8 +29,11 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
 Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::get('/doctor/profile/create', [DoctorProfileController::class, 'create'])->name('doctor.profile.create');
     Route::post('/doctor/profile', [DoctorProfileController::class, 'store'])->name('doctor.profile.store');
+
     Route::get('/doctor/profile/edit', [DoctorProfileController::class, 'edit'])->name('doctor.profile.edit');
     Route::put('/doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
 });
+
+
 
 require __DIR__.'/auth.php';
