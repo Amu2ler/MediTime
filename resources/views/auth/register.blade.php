@@ -34,10 +34,17 @@
         </div>
 
         <script>
-        document.getElementById('role').addEventListener('change', function () {
-            document.getElementById('specialty-div')
-                .classList.toggle('hidden', this.value !== 'doctor');
-        });
+            const roleSelect = document.getElementById('role');
+            const specialtyDiv = document.getElementById('specialty-div');
+
+            function toggleSpecialty() {
+                specialtyDiv.classList.toggle('hidden', roleSelect.value !== 'doctor');
+            }
+
+            roleSelect.addEventListener('change', toggleSpecialty);
+            
+            // Initial check on page load (for validation errors)
+            toggleSpecialty();
         </script>
 
         <!-- Email Address -->

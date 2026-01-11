@@ -14,7 +14,7 @@ class SpecialtyController extends Controller
     public function index()
     {
         $specialties = Specialty::all();
-        return view('specialties.index', compact('specialties'));
+        return view('admin.specialties.index', compact('specialties'));
     }
 
     /**
@@ -22,7 +22,7 @@ class SpecialtyController extends Controller
      */
     public function create()
     {
-        return view('specialties.create');
+        return view('admin.specialties.create');
     }
 
     /**
@@ -55,7 +55,7 @@ class SpecialtyController extends Controller
      */
     public function edit(Specialty $specialty)
     {
-        return view('specialties.edit', compact('specialty'));
+        return view('admin.specialties.edit', compact('specialty'));
     }
 
     /**

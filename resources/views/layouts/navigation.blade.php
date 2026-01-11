@@ -15,6 +15,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
+                        {{ __('Trouver un médecin') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -37,6 +40,12 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+
+                        @if(Auth::user()->role === 'doctor')
+                            <x-dropdown-link :href="route('slots.index')">
+                                {{ __('Gérer mes disponibilités') }}
+                            </x-dropdown-link>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -70,6 +79,9 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
+                {{ __('Trouver un médecin') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -83,6 +95,12 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
+
+                @if(Auth::user()->role === 'doctor')
+                    <x-responsive-nav-link :href="route('slots.index')">
+                        {{ __('Gérer mes disponibilités') }}
+                    </x-responsive-nav-link>
+                @endif
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">

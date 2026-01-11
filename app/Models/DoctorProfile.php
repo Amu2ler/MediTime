@@ -12,10 +12,11 @@ class DoctorProfile extends Model
     protected $fillable = [
         'user_id',
         'specialty_id',
-        'first_name',
-        'last_name',
         'phone',
         'bio',
+        'address',
+        'city',
+        'zip_code',
     ];
 
     public function user()

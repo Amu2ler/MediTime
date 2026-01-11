@@ -12,26 +12,28 @@ class DoctorProfileController extends Controller
     public function create()
     {
         $specialties = Specialty::orderBy('name')->get();
-        return view('doctor-profile.create', compact('specialties'));
+        return view('doctor.profile.create', compact('specialties'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'first_name'   => ['required', 'string', 'max:255'],
-            'last_name'    => ['required', 'string', 'max:255'],
             'specialty_id' => ['required', 'exists:specialties,id'],
             'phone'        => ['nullable', 'string', 'max:50'],
             'bio'          => ['nullable', 'string'],
+            'address'      => ['nullable', 'string', 'max:255'],
+            'city'         => ['nullable', 'string', 'max:255'],
+            'zip_code'     => ['nullable', 'string', 'max:10'],
         ]);
 
         DoctorProfile::create([
             'user_id'       => Auth::id(),
-            'first_name'    => $request->first_name,
-            'last_name'     => $request->last_name,
             'specialty_id'  => $request->specialty_id,
             'phone'         => $request->phone,
             'bio'           => $request->bio,
+            'address'       => $request->address,
+            'city'          => $request->city,
+            'zip_code'      => $request->zip_code,
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Profil médecin créé.');
@@ -46,7 +48,7 @@ class DoctorProfileController extends Controller
         }
 
         $specialties = Specialty::orderBy('name')->get();
-        return view('doctor-profile.edit', compact('profile', 'specialties'));
+        return view('doctor.profile.edit', compact('profile', 'specialties'));
     }
 
     public function update(Request $request)
@@ -58,19 +60,21 @@ class DoctorProfileController extends Controller
         }
 
         $request->validate([
-            'first_name'   => ['required', 'string', 'max:255'],
-            'last_name'    => ['required', 'string', 'max:255'],
             'specialty_id' => ['required', 'exists:specialties,id'],
             'phone'        => ['nullable', 'string', 'max:50'],
             'bio'          => ['nullable', 'string'],
+            'address'      => ['nullable', 'string', 'max:255'],
+            'city'         => ['nullable', 'string', 'max:255'],
+            'zip_code'     => ['nullable', 'string', 'max:10'],
         ]);
 
         $profile->update([
-            'first_name'   => $request->first_name,
-            'last_name'    => $request->last_name,
             'specialty_id' => $request->specialty_id,
             'phone'        => $request->phone,
             'bio'          => $request->bio,
+            'address'      => $request->address,
+            'city'         => $request->city,
+            'zip_code'     => $request->zip_code,
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Profil médecin mis à jour.');
