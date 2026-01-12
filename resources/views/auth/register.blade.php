@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
         @csrf
 
         <!-- Name -->
@@ -12,11 +12,10 @@
         <!-- Role -->
         <div class="mt-4">
             <x-input-label for="role" :value="__('Rôle')" />
-            <select name="role" id="role" class="mt-1 block w-full">
+            <select name="role" id="role" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                 <option value="">-- Choisir un rôle --</option>
                 <option value="patient" {{ old('role') === 'patient' ? 'selected' : '' }}>Patient</option>
                 <option value="doctor" {{ old('role') === 'doctor' ? 'selected' : '' }}>Médecin</option>
-                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Administrateur</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
@@ -24,7 +23,7 @@
         <!-- Select spécialité (caché par défaut) -->
         <div class="mt-4 hidden" id="specialty-div">
             <x-input-label for="specialty_id" value="Spécialité" />
-            <select name="specialty_id" id="specialty_id" class="mt-1 block w-full">
+            <select name="specialty_id" id="specialty_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                 <option value="">-- Choisir une spécialité --</option>
                 @foreach($specialties as $specialty)
                     <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
@@ -33,18 +32,34 @@
             <x-input-error :messages="$errors->get('specialty_id')" class="mt-2" />
         </div>
 
+        <!-- Upload Attestation (caché par défaut) -->
+        <div class="mt-4 hidden" id="certificate-div">
+            <x-input-label for="certificate" value="Attestation de médecin (PDF, JPG, PNG)" />
+            <input type="file" name="certificate" id="certificate" class="mt-1 block w-full text-sm text-gray-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-indigo-50 file:text-indigo-700
+                hover:file:bg-indigo-100
+            " />
+            <x-input-error :messages="$errors->get('certificate')" class="mt-2" />
+        </div>
+
         <script>
             const roleSelect = document.getElementById('role');
             const specialtyDiv = document.getElementById('specialty-div');
+            const certificateDiv = document.getElementById('certificate-div');
 
-            function toggleSpecialty() {
-                specialtyDiv.classList.toggle('hidden', roleSelect.value !== 'doctor');
+            function toggleDoctorFields() {
+                const isDoctor = roleSelect.value === 'doctor';
+                specialtyDiv.classList.toggle('hidden', !isDoctor);
+                certificateDiv.classList.toggle('hidden', !isDoctor);
             }
 
-            roleSelect.addEventListener('change', toggleSpecialty);
+            roleSelect.addEventListener('change', toggleDoctorFields);
             
-            // Initial check on page load (for validation errors)
-            toggleSpecialty();
+            // Initial check on page load
+            toggleDoctorFields();
         </script>
 
         <!-- Email Address -->

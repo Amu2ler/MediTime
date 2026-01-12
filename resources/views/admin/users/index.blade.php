@@ -10,26 +10,90 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     
-                    @if (session('success'))
-                        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                            <span class="block sm:inline">{{ session('success') }}</span>
-                        </div>
-                    @endif
+                    <div class="text-center">
+                        @if (session('success'))
+                            <div class="mb-6 px-6 py-2 rounded-full inline-block font-medium shadow-sm transition-all"
+                                 style="background-color: #d1fae5; color: #065f46; border: 1px solid #34d399;">
+                                {{ session('success') }}
+                            </div>
+                        @endif
 
-                    @if (session('error'))
-                        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <span class="block sm:inline">{{ session('error') }}</span>
+                        @if (session('error'))
+                            <div class="mb-6 px-6 py-2 rounded-full inline-block font-medium shadow-sm transition-all"
+                                 style="background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-medium text-gray-900">Liste des utilisateurs</h3>
+                        
+                        <!-- Role Filters -->
+                        <div class="flex space-x-2">
+                            <a href="{{ request()->fullUrlWithQuery(['role' => null]) }}" 
+                               class="px-4 py-2 rounded-full text-sm font-medium transition-colors border shadow-sm"
+                               style="{{ !request('role') ? 'background-color: #0596de; color: white; border-color: #0596de;' : 'background-color: white; color: #374151; border-color: #d1d5db;' }}">
+                                Tous
+                            </a>
+                            <a href="{{ request()->fullUrlWithQuery(['role' => 'doctor']) }}" 
+                               class="px-4 py-2 rounded-full text-sm font-medium transition-colors border shadow-sm"
+                               style="{{ request('role') === 'doctor' ? 'background-color: #0596de; color: white; border-color: #0596de;' : 'background-color: white; color: #374151; border-color: #d1d5db;' }}">
+                                Médecins
+                            </a>
+                            <a href="{{ request()->fullUrlWithQuery(['role' => 'patient']) }}" 
+                               class="px-4 py-2 rounded-full text-sm font-medium transition-colors border shadow-sm"
+                               style="{{ request('role') === 'patient' ? 'background-color: #0596de; color: white; border-color: #0596de;' : 'background-color: white; color: #374151; border-color: #d1d5db;' }}">
+                                Patients
+                            </a>
                         </div>
-                    @endif
+                    </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_order' => request('sort_by') === 'name' && request('sort_order') === 'asc' ? 'desc' : 'asc']) }}" class="group flex items-center space-x-1 hover:text-gray-900">
+                                            <span>Nom</span>
+                                            @if(request('sort_by') === 'name')
+                                                <svg class="w-4 h-4 text-gray-900" 
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if(request('sort_order') === 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <!-- Inactive Sort Icon (Always visible now) -->
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_order' => request('sort_by') === 'created_at' && request('sort_order') === 'asc' ? 'desc' : 'asc']) }}" class="group flex items-center space-x-1 hover:text-gray-900">
+                                            <span>Date d'inscription</span>
+                                            @if(request('sort_by') === 'created_at' || !request('sort_by'))
+                                                <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if(request('sort_order') === 'asc')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                                    @else
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    @endif
+                                                </svg>
+                                            @else
+                                                <!-- Inactive Sort Icon (Always visible now) -->
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>

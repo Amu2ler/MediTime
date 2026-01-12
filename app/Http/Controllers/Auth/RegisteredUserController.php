@@ -35,8 +35,9 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'role' => ['required', 'string', 'in:patient,doctor,admin'],
+            'role' => ['required', 'string', 'in:patient,doctor'], // Removed admin
             'specialty_id' => ['nullable', 'required_if:role,doctor', 'exists:specialties,id'],
+            'certificate' => ['nullable', 'required_if:role,doctor', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -49,9 +50,15 @@ class RegisteredUserController extends Controller
         ]);
 
         if ($user->role === 'doctor') {
+            $certificatePath = null;
+            if ($request->hasFile('certificate')) {
+                $certificatePath = $request->file('certificate')->store('certificates', 'public');
+            }
+
             DoctorProfile::create([
                 'user_id' => $user->id,
                 'specialty_id' => (int) $request->input('specialty_id'),
+                'certificate_path' => $certificatePath,
             ]);
         }
 

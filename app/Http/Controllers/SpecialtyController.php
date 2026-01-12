@@ -11,9 +11,10 @@ class SpecialtyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $specialties = Specialty::all();
+        $sortOrder = $request->get('sort', 'asc') === 'desc' ? 'desc' : 'asc';
+        $specialties = Specialty::orderBy('name', $sortOrder)->get();
         return view('admin.specialties.index', compact('specialties'));
     }
 
@@ -79,8 +80,13 @@ class SpecialtyController extends Controller
      */
     public function destroy(Specialty $specialty)
     {
+        // Constraint: Cannot delete specialty attached to doctors
+        if ($specialty->doctorProfiles()->exists()) {
+             return back()->with('error', 'Impossible de supprimer cette spécialité car elle est attribuée à des médecins.');
+        }
+
         $specialty->delete();
 
-        return redirect()->route('specialties.index');
+        return redirect()->route('specialties.index')->with('success', 'Spécialité supprimée avec succès.');
     }
 }

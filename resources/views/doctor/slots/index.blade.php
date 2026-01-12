@@ -57,7 +57,7 @@
             </div>
 
             <!-- Liste des créneaux -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <div x-data class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h2 class="text-lg font-semibold mb-4">Vos prochains créneaux</h2>
                 
                 @if($slots->count() > 0)
@@ -69,6 +69,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Heure</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motif</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -99,15 +100,22 @@
                                                 -
                                             @endif
                                         </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">
+                                            @if($slot->appointment && $slot->appointment->reason)
+                                                {{ Str::limit($slot->appointment->reason, 30) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             @if(!$slot->is_booked)
-                                                <form action="{{ route('slots.destroy', $slot) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr ?')">Supprimer</button>
-                                                </form>
+                                                <button type="button" 
+                                                        class="text-red-600 hover:text-red-900" 
+                                                        @click="$dispatch('set-action-delete-slot', '{{ url('/slots') }}/{{ $slot->id }}'); $dispatch('open-modal-delete-slot')">
+                                                    Supprimer
+                                                </button>
                                             @else
-                                                <span class="text-gray-400">Non supprimable</span>
+                                                <span class="text-gray-400">Non réservable</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -118,6 +126,14 @@
                 @else
                     <p class="text-gray-500">Aucun créneau disponible.</p>
                 @endif
+                
+                <x-modal-confirm 
+                    id="delete-slot" 
+                    title="Supprimer le créneau" 
+                    message="Êtes-vous sûr de vouloir supprimer ce créneau ?" 
+                    confirmText="Supprimer"
+                    method="DELETE"
+                />
             </div>
         </div>
     </div>

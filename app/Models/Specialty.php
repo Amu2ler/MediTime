@@ -13,6 +13,11 @@ class Specialty extends Model
     {
         return $this->hasMany(DoctorProfile::class);
     }
+
+    public function consultationReasons()
+    {
+        return $this->hasMany(ConsultationReason::class);
+    }
 }
 
 

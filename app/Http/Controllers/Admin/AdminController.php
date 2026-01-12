@@ -20,9 +20,24 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('stats'));
     }
 
-    public function users()
+    public function users(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(20);
+        $query = User::query();
+
+        // 1. Filter by Role
+        if ($request->role && in_array($request->role, ['doctor', 'patient'])) {
+            $query->where('role', $request->role);
+        }
+
+        // 2. Sorting
+        $allowedSorts = ['name', 'created_at'];
+        $sortBy = in_array($request->sort_by, $allowedSorts) ? $request->sort_by : 'created_at';
+        $sortOrder = $request->sort_order === 'asc' ? 'asc' : 'desc';
+
+        $users = $query->orderBy($sortBy, $sortOrder)
+                       ->paginate(20)
+                       ->withQueryString();
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -31,6 +46,31 @@ class AdminController extends Controller
         // Prevent deleting self
         if (auth()->id() === $user->id) {
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+        }
+
+        // Constraint: Doctor with future appointments
+        if ($user->role === 'doctor') {
+            $futureAppointments = $user->slots()
+                ->where('start_time', '>', now())
+                ->where('is_booked', true)
+                ->count();
+
+            if ($futureAppointments > 0) {
+                return back()->with('error', "Impossible de supprimer ce médecin car il a {$futureAppointments} rendez-vous futurs planifiés.");
+            }
+        }
+
+        // Constraint: Patient with future appointments
+        if ($user->role === 'patient') {
+            $futureAppointments = Appointment::where('patient_id', $user->id)
+                ->whereHas('slot', function ($query) {
+                    $query->where('start_time', '>', now());
+                })
+                ->count();
+
+            if ($futureAppointments > 0) {
+                return back()->with('error', "Impossible de supprimer ce patient car il a {$futureAppointments} rendez-vous futurs planifiés.");
+            }
         }
 
         $user->delete();

@@ -35,7 +35,11 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $this->call(SpecialtySeeder::class);
-
+        $this->call([
+            SpecialtySeeder::class,
+            ConsultationReasonSeeder::class, // Added
+            DoctorSeeder::class,
+            PatientSeeder::class,
+        ]);
     }
 }

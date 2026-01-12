@@ -20,6 +20,23 @@ class DoctorSearchController extends Controller
             ->when($request->city, function (Builder $query, $city) {
                 $query->where('city', 'like', "%{$city}%");
             })
+            ->when($request->availability, function (Builder $query, $availability) {
+                $query->whereHas('user.slots', function (Builder $query) use ($availability) {
+                    $query->where('is_booked', false)
+                          ->where('start_time', '>', now()); // Global rule: must be in future
+
+                    if ($availability === 'today') {
+                        $query->whereDate('start_time', now()->toDateString());
+                    } elseif ($availability === 'week') {
+                        $query->whereBetween('start_time', [now(), now()->addWeek()]);
+                    }
+                });
+            })
+            ->with(['user', 'specialty', 'user.slots' => function($query) {
+                $query->where('is_booked', false)
+                      ->where('start_time', '>', now())
+                      ->orderBy('start_time');
+            }])
             ->get();
 
         return view('doctor.search.index', compact('specialties', 'doctors'));
