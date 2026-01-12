@@ -1,25 +1,35 @@
 # MediTime - Plateforme de Prise de Rendez-vous Médicaux
 
-MediTime est une application web complète permettant de simplifier la mise en relation entre patients et professionnels de santé. Ce projet est un clone simplifié de Doctolib, réalisé avec **Laravel 12**.
+MediTime est une application web complète permettant de simplifier la mise en relation entre patients et professionnels de santé. Ce projet est un clone avancé de Doctolib, réalisé avec **Laravel 12**.
 
-## 🚀 Fonctionnalités
+## 🚀 Fonctionnalités Clés
 
 ### 👨‍⚕️ Pour les Médecins
 *   **Gestion de profil** : Ajout d'informations professionnelles, adresse du cabinet, biographie.
-*   **Gestion des disponibilités** : Création de créneaux horaires (slots) pour les rendez-vous.
-*   **Tableau de bord** : Vue d'ensemble des prochains rendez-vous confirmés.
-*   **Annulation** : Possibilité d'annuler un rendez-vous (libère le créneau).
+*   **Attestation** : Téléchargement et validation de l'attestation d'exercice.
+*   **Gestion des disponibilités** : Création de créneaux horaires (slots) flexibles.
+*   **Tableau de bord** : Vue d'ensemble des rendez-vous, avec motif de consultation visible.
+*   **Annulation** : Possibilité d'annuler un rendez-vous (notifie le patient et libère le créneau).
 
 ### 🏥 Pour les Patients
 *   **Recherche avancée** : Trouver un médecin par nom, spécialité ou ville.
-*   **Prise de rendez-vous** : Réservation simple et rapide sur les créneaux disponibles.
-*   **Tableau de bord** : Suivi des rendez-vous à venir et historique.
-*   **Annulation** : Gestion autonome des annulations.
+*   **Filtres de disponibilité** : Filtrer par "Aujourd'hui", "Cette semaine", etc.
+*   **Prise de rendez-vous** : Réservation fluide avec choix du **motif de consultation**.
+*   **Espace Patient** : Suivi des rendez-vous à venir et historique complet.
 
-### 🛡️ Administration
-*   **Dashboard Admin** : Statistiques globales de la plateforme.
-*   **Gestion des utilisateurs** : Vue d'ensemble et suppression de comptes.
-*   **Gestion des spécialités** : Ajout, modification et suppression des spécialités médicales disponibles.
+### 🛡️ Administration (Nouveau)
+*   **Dashboard Moderne** : Statistiques globales (Médecins, Patients, RDV) avec graphiques visuels.
+*   **Gestion des Utilisateurs** :
+    *   Filtrage par rôle (Médecins / Patients).
+    *   Tri dynamique par nom et date d'inscription.
+    *   **Sécurité** : Impossible de supprimer un utilisateur ayant des rendez-vous futurs.
+*   **Gestion des Spécialités** : Interface moderne en grille pour ajouter/modifier les spécialités.
+
+## 🎨 Design & UX
+Le projet respecte les codes visuels modernes (type Doctolib) :
+*   Design épuré (Blanc / Bleu #0596de).
+*   Feedback utilisateur clair (Messages de succès/erreur, Popups de confirmation).
+*   Interface 100% responsive.
 
 ## 🛠️ Stack Technique
 
@@ -53,7 +63,7 @@ MediTime est une application web complète permettant de simplifier la mise en r
     ```bash
     php artisan migrate --seed
     ```
-    *Cela créera les tables et un jeu de données de test (admin, patients, médecins, spécialités).*
+    *Cela créera les tables et un jeu de données de test complet (admin, médecins, patients, créneaux).*
 
 5.  **Lancer l'application**
     ```bash
@@ -63,29 +73,23 @@ MediTime est une application web complète permettant de simplifier la mise en r
 
 ## 🔐 Comptes de Test
 
-Une fois les *seeders* lancés, vous pouvez utiliser ces comptes :
+Une fois les *seeders* lancés :
 
 *   **Admin** : `admin@meditime.com` / `password`
 *   **Patient** : `test@example.com` / `password`
+*   **Médecins** : Générés aléatoirement (voir base de données).
 
 ## 📂 Structure du Projet
 
-Les fichiers clés du projet sont organisés comme suit :
-
 *   **Models** (`app/Models`) :
-    *   `User` : Modèle unique pour tous les rôles (Patient, Doctor, Admin).
-    *   `DoctorProfile` : Informations spécifiques aux médecins (liée à User).
+    *   `User` : Modèle unique (Rôles: admin, doctor, patient).
+    *   `DoctorProfile` : Infos médecins & Attestation.
     *   `Specialty` : Spécialités médicales.
-    *   `Slot` : Créneaux horaires de disponibilité.
-    *   `Appointment` : Rendez-vous liant un Patient et un Slot.
+    *   `Slot` : Créneaux horaires.
+    *   `Appointment` : Rendez-vous.
+    *   `ConsultationReason` : Motifs de consultation.
 
 *   **Contrôleurs** (`app/Http/Controllers`) :
-    *   `Admin/` : Logique réservée aux administrateurs.
-    *   `DoctorSearchController` : Moteur de recherche.
-    *   `BookingController` : Gestion de la prise de rendez-vous.
-    *   `SlotController` : Gestion des créneaux médecins.
-
-*   **Vues** (`resources/views`) :
-    *   `admin/` : Interfaces d'administration.
-    *   `doctor/` : Interfaces spécifiques aux médecins.
-    *   `doctor-search/` : Page de recherche publique.
+    *   `Admin/` : Logique d'administration protégée.
+    *   `DoctorSearchController` : Recherche et filtres.
+    *   `BookingController` : Flux de réservation complet.
