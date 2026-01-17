@@ -14,6 +14,9 @@ class DoctorSearchController extends Controller
         $specialties = Specialty::orderBy('name')->get();
 
         $doctors = DoctorProfile::with(['user', 'specialty'])
+            ->when($request->doctor_id, function (Builder $query, $id) {
+                $query->where('id', $id);
+            })
             ->when($request->specialty_id, function (Builder $query, $specialtyId) {
                 $query->where('specialty_id', $specialtyId);
             })

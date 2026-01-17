@@ -14,9 +14,17 @@ class BookingController extends Controller
     // Show available slots for a specific doctor
     public function create(Request $request, DoctorProfile $doctor)
     {
-        // Load specialty and its reasons
+        // ... (Existing Loads)
         $doctor->load(['specialty.consultationReasons']);
         $consultationReasons = $doctor->specialty->consultationReasons;
+
+        // Reschedule Logic
+        $rescheduleAppointment = null;
+        if ($request->has('reschedule_id')) {
+            $rescheduleAppointment = Appointment::where('id', $request->reschedule_id)
+                ->where('patient_id', Auth::id())
+                ->first();
+        }
 
         // Check if a specific slot was selected from Search
         $selectedSlot = null;
@@ -43,7 +51,7 @@ class BookingController extends Controller
                 return $slot->start_time->format('Y-m-d');
             });
 
-        return view('patient.booking.create', compact('doctor', 'slots', 'startOfWeek', 'previousWeek', 'nextWeek', 'currentDate', 'consultationReasons', 'selectedSlot'));
+        return view('patient.booking.create', compact('doctor', 'slots', 'startOfWeek', 'previousWeek', 'nextWeek', 'currentDate', 'consultationReasons', 'selectedSlot', 'rescheduleAppointment'));
     }
 
     // Handle the reservation
@@ -52,7 +60,8 @@ class BookingController extends Controller
         $request->validate([
             'slot_id' => ['required', 'exists:slots,id'],
             'reason_id' => ['required', 'exists:consultation_reasons,id'],
-            'reason' => ['nullable', 'string', 'max:500'], // This is the optional note
+            'reason' => ['nullable', 'string', 'max:500'],
+            'reschedule_id' => ['nullable', 'exists:appointments,id'],
         ]);
 
         $slot = Slot::findOrFail($request->slot_id);
@@ -62,26 +71,48 @@ class BookingController extends Controller
             return back()->withErrors(['slot_id' => 'Ce créneau n\'est plus disponible.']);
         }
 
-        // Fetch the selected reason name
-        $specialtyReason = \App\Models\ConsultationReason::find($request->reason_id);
-        
-        // Combine Reason Name + Patient Note
-        $finalReason = $specialtyReason->name;
-        if ($request->filled('reason')) {
-            $finalReason .= ' - ' . $request->reason;
-        }
+        // Transaction for Rescheduling safety
+        \DB::transaction(function () use ($request, $slot) {
+            
+            // Prepare Reason String
+            $specialtyReason = \App\Models\ConsultationReason::find($request->reason_id);
+            $finalReason = $specialtyReason->name;
+            if ($request->filled('reason')) {
+                $finalReason .= ' - ' . $request->reason;
+            }
 
-        // Create appointment
-        Appointment::create([
-            'patient_id' => Auth::id(),
-            'slot_id' => $slot->id,
-            'reason' => $finalReason,
-            'status' => 'confirmed',
-        ]);
+            // Reschedule existing or Create new
+            if ($request->filled('reschedule_id')) {
+                $appointment = Appointment::where('id', $request->reschedule_id)
+                    ->where('patient_id', Auth::id())
+                    ->firstOrFail();
 
-        // Mark slot as booked
-        $slot->update(['is_booked' => true]);
+                // Free the OLD slot
+                $oldSlot = $appointment->slot;
+                $oldSlot->update(['is_booked' => false]);
 
-        return redirect()->route('dashboard')->with('success', 'Rendez-vous confirmé !');
+                // Update Appointment to NEW slot
+                $appointment->update([
+                    'slot_id' => $slot->id,
+                    'reason' => $finalReason,
+                    'status' => 'confirmed', // Re-confirm if it was something else
+                ]);
+            } else {
+                // Create Appointment
+                Appointment::create([
+                    'patient_id' => Auth::id(),
+                    'slot_id' => $slot->id,
+                    'reason' => $finalReason,
+                    'status' => 'confirmed',
+                ]);
+            }
+
+            // Book the NEW slot
+            $slot->update(['is_booked' => true]);
+        });
+
+        $message = $request->filled('reschedule_id') ? 'Rendez-vous modifié avec succès !' : 'Rendez-vous confirmé !';
+
+        return redirect()->route('dashboard')->with('success', $message);
     }
 }

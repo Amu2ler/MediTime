@@ -16,7 +16,12 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     @auth
-                        @unless(Auth::user()->role === 'doctor')
+                        @if(Auth::user()->role === 'doctor')
+                            <x-nav-link :href="route('slots.index')" :active="request()->routeIs('slots.index')">
+                                {{ __('Gérer mes disponibilités') }}
+                            </x-nav-link>
+                        @endif
+                        @unless(in_array(Auth::user()->role, ['doctor', 'admin']))
                             <x-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
                                 {{ __('Trouver un médecin') }}
                             </x-nav-link>
@@ -50,11 +55,7 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
-                            @if(Auth::user()->role === 'doctor')
-                                <x-dropdown-link :href="route('slots.index')">
-                                    {{ __('Gérer mes disponibilités') }}
-                                </x-dropdown-link>
-                            @endif
+
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
@@ -100,7 +101,12 @@
             </x-responsive-nav-link>
             
             @auth
-                @unless(Auth::user()->role === 'doctor')
+                @if(Auth::user()->role === 'doctor')
+                    <x-responsive-nav-link :href="route('slots.index')" :active="request()->routeIs('slots.index')">
+                        {{ __('Gérer mes disponibilités') }}
+                    </x-responsive-nav-link>
+                @endif
+                @unless(in_array(Auth::user()->role, ['doctor', 'admin']))
                     <x-responsive-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
                         {{ __('Trouver un médecin') }}
                     </x-responsive-nav-link>
@@ -125,11 +131,7 @@
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
 
-                    @if(Auth::user()->role === 'doctor')
-                        <x-responsive-nav-link :href="route('slots.index')">
-                            {{ __('Gérer mes disponibilités') }}
-                        </x-responsive-nav-link>
-                    @endif
+
 
                     <!-- Authentication -->
                     <form method="POST" action="{{ route('logout') }}">

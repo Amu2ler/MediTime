@@ -5,7 +5,7 @@
                 {{ __('Finaliser mon rendez-vous') }}
             </h2>
             
-            <a href="{{ url()->previous() }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium transition">
+            <a href="{{ isset($rescheduleAppointment) ? route('dashboard') : route('doctor.search') }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium transition">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -31,6 +31,50 @@
                             @if($selectedSlot)
                                 <input type="hidden" name="slot_id" value="{{ $selectedSlot->id }}">
                             @endif
+                            @if($rescheduleAppointment)
+                                <input type="hidden" name="reschedule_id" value="{{ $rescheduleAppointment->id }}">
+                                
+                                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg">
+                                    <div class="mb-4 flex items-center gap-2 text-blue-800">
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                                        </svg>
+                                        <h4 class="font-bold text-lg">Modification de rendez-vous</h4>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Old Appointment -->
+                                        <div>
+                                            <p class="font-bold text-blue-800 text-xs uppercase tracking-wider mb-2">Ancien Rendez-vous</p>
+                                            <div class="bg-blue-100/50 p-3 rounded-md border border-blue-100">
+                                                <p class="text-sm text-blue-900 font-bold mb-1">
+                                                    {{ $rescheduleAppointment->slot->start_time->format('d/m/Y à H:i') }}
+                                                </p>
+                                                <p class="text-xs text-blue-700 leading-snug">
+                                                    {{ $rescheduleAppointment->reason }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- New Appointment -->
+                                        <div>
+                                            <p class="font-bold text-blue-800 text-xs uppercase tracking-wider mb-2">Nouveau Rendez-vous</p>
+                                            <div class="bg-white p-3 rounded-md border border-blue-200 shadow-sm">
+                                                <p class="text-sm text-blue-900 font-bold mb-1">
+                                                    @if($selectedSlot)
+                                                        {{ $selectedSlot->start_time->format('d/m/Y à H:i') }}
+                                                    @else
+                                                        <span class="text-orange-600">⚠️ Aucun créneau sélectionné</span>
+                                                    @endif
+                                                </p>
+                                                <p class="text-xs text-blue-500 italic">
+                                                    Sélectionnez le nouveau motif ci-dessous
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="grid grid-cols-1 gap-5">
                                 @forelse($consultationReasons as $reason)
@@ -39,7 +83,7 @@
 
                                         <div class="flex items-center h-5 shrink-0">
                                             <input type="radio" name="reason_id" value="{{ $reason->id }}" 
-                                                   x-model="selectedReason" class="h-6 w-6 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                                   x-model="selectedReason" required class="h-6 w-6 text-blue-600 border-gray-300 focus:ring-blue-500">
                                         </div>
 
                                         <div class="flex-1">
@@ -52,6 +96,11 @@
                                     </div>
                                 @endforelse
                             </div>
+                            @error('reason_id')
+                                <p class="text-red-600 font-medium mt-4 text-center bg-red-50 p-3 rounded-lg border border-red-200">
+                                    Veuillez sélectionner un motif de consultation.
+                                </p>
+                            @enderror
 
                             <!-- Optional Message -->
                             <div class="mt-8 transition" x-show="selectedReason" x-transition>
@@ -108,9 +157,9 @@
                             <div class="mt-6 pt-6 border-t border-gray-100">
                                 <button type="submit" 
                                         form="booking-form"
-                                        style="background-color: #eab308; color: white;"
-                                        class="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-lg text-sm font-black text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all uppercase tracking-widest ">
-                                    Confirmer le RDV
+                                        style="background-color: {{ isset($rescheduleAppointment) ? '#2563eb' : '#eab308' }}; color: white;"
+                                        class="w-full flex justify-center py-4 px-6 border border-transparent rounded-lg shadow-lg text-sm font-black text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all uppercase tracking-widest">
+                                    {{ isset($rescheduleAppointment) ? 'MODIFIER LE RENDEZ-VOUS' : 'CONFIRMER LE RDV' }}
                                 </button>
                                 <p class="text-xs text-center text-gray-400 mt-2">En cliquant sur "Confirmer", vous acceptez les CGU.</p>
                             </div>

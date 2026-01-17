@@ -12,15 +12,33 @@ class SlotController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $slots = Slot::where('user_id', Auth::id())
-            ->where('start_time', '>=', now())
-            ->with('appointment.patient') // Eager load appointment and patient references
-            ->orderBy('start_time')
-            ->get();
+        // Default to start of current week if no date provided
+        $startOfWeek = $request->input('start_date') 
+            ? Carbon::parse($request->input('start_date'))->startOfWeek() 
+            : now()->startOfWeek();
+            
+        $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-        return view('doctor.slots.index', compact('slots'));
+        // Navigation dates
+        $previousWeek = $startOfWeek->copy()->subWeek()->format('Y-m-d');
+        $nextWeek = $startOfWeek->copy()->addWeek()->format('Y-m-d');
+        
+        // Label (e.g., "15 Janvier - 21 Janvier 2024")
+        $weekLabel = $startOfWeek->translatedFormat('d F') . ' - ' . $endOfWeek->translatedFormat('d F Y');
+
+        $slots = Slot::where('user_id', Auth::id())
+            ->whereBetween('start_time', [$startOfWeek, $endOfWeek])
+            ->with('appointment.patient')
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy(function($slot) {
+                // Group by date (Y-m-d) for easier view rendering
+                return $slot->start_time->format('Y-m-d');
+            });
+
+        return view('doctor.slots.index', compact('slots', 'startOfWeek', 'previousWeek', 'nextWeek', 'weekLabel'));
     }
 
     /**

@@ -13,8 +13,15 @@ class SpecialtyController extends Controller
      */
     public function index(Request $request)
     {
+        $query = Specialty::query();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
         $sortOrder = $request->get('sort', 'asc') === 'desc' ? 'desc' : 'asc';
-        $specialties = Specialty::orderBy('name', $sortOrder)->get();
+        $specialties = $query->orderBy('name', $sortOrder)->get();
+
         return view('admin.specialties.index', compact('specialties'));
     }
 
@@ -33,14 +40,14 @@ class SpecialtyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:specialties',
         ]);
 
         Specialty::create([
             'name' => $request->name,
         ]);
 
-        return redirect()->route('specialties.index');
+        return redirect()->route('specialties.index')->with('success', 'Spécialité créée avec succès.');
     }
 
     /**
@@ -65,14 +72,14 @@ class SpecialtyController extends Controller
     public function update(Request $request, Specialty $specialty)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:specialties,name,' . $specialty->id,
         ]);
 
         $specialty->update([
             'name' => $request->name,
         ]);
 
-        return redirect()->route('specialties.index');
+        return redirect()->route('specialties.index')->with('warning', 'Spécialité modifiée avec succès.');
     }
 
     /**
@@ -87,6 +94,6 @@ class SpecialtyController extends Controller
 
         $specialty->delete();
 
-        return redirect()->route('specialties.index')->with('success', 'Spécialité supprimée avec succès.');
+        return redirect()->route('specialties.index')->with('danger', 'Spécialité supprimée avec succès.');
     }
 }

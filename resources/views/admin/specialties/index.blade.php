@@ -29,6 +29,26 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            <!-- Search Form -->
+            <form method="GET" action="{{ route('specialties.index') }}" class="mb-6 flex items-center gap-4">
+                <div class="flex-1 max-w-md relative">
+                    <x-text-input id="search" name="search" type="text" 
+                                  class="block w-full h-10 pl-10 pr-4 rounded-full" 
+                                  placeholder="Rechercher une spécialité..." 
+                                  :value="request('search')" />
+                </div>
+
+                @if(request('search'))
+                    <a href="{{ route('specialties.index') }}" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors">
+                        Effacer
+                    </a>
+                @endif
+                
+                <x-primary-button class="h-10 rounded-full">
+                    Rechercher
+                </x-primary-button>
+            </form>
             
             <!-- Flash Messages -->
             <div class="text-center">
@@ -39,10 +59,17 @@
                     </div>
                 @endif
 
-                @if (session('error'))
+                @if (session('warning'))
+                    <div class="mb-6 px-6 py-2 rounded-full inline-block font-medium shadow-sm transition-all"
+                         style="background-color: #ffedd5; color: #9a3412; border: 1px solid #fb923c;">
+                        {{ session('warning') }}
+                    </div>
+                @endif
+
+                @if (session('danger') || session('error'))
                     <div class="mb-6 px-6 py-2 rounded-full inline-block font-medium shadow-sm transition-all"
                          style="background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;">
-                        {{ session('error') }}
+                        {{ session('danger') ?? session('error') }}
                     </div>
                 @endif
             </div>
@@ -52,17 +79,12 @@
                 @forelse ($specialties as $specialty)
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow duration-200 group">
                         <div class="flex items-center gap-4">
-                            <div class="p-3 bg-blue-50 text-blue-600 rounded-full group-hover:bg-blue-100 transition-colors">
-                                <!-- Generic Medical Icon -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </div>
+
                             <span class="text-lg font-bold text-gray-900">{{ $specialty->name }}</span>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('specialties.edit', $specialty) }}" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Modifier">
+                            <a href="{{ route('specialties.edit', $specialty) }}" class="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors" title="Modifier">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>

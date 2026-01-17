@@ -11,49 +11,49 @@
             <!-- Welcome Section -->
             <div class="mb-8">
                 <h3 class="text-lg font-medium text-gray-900">Vue d'ensemble</h3>
-                <p class="text-sm text-gray-500">Voici ce qui se passe sur votre plateforme aujourd'hui.</p>
+                <p class="text-sm text-gray-500 ">Voici ce qui se passe sur votre plateforme aujourd'hui.</p>
             </div>
 
             <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-10">
                 <!-- Doctors Card -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 flex items-center transition hover:shadow-md">
-                    <div class="p-4 rounded-full mr-5" style="background-color: #eff6ff; color: #2563eb;">
+                    <div class="p-4 rounded-full" style="background-color: #275797ff; color: #2563eb; margin-right: 24px;">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1">
                         <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Médecins</div>
-                        <div class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['doctors_count'] }}</div>
                     </div>
+                    <div class="text-3xl font-bold text-gray-900">{{ $stats['doctors_count'] }}</div>
                 </div>
 
                 <!-- Patients Card -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 flex items-center transition hover:shadow-md">
-                    <div class="p-4 rounded-full mr-5" style="background-color: #f0fdfa; color: #0d9488;">
+                    <div class="p-4 rounded-full" style="background-color: #208870ff; color: #0d9488; margin-right: 24px;">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1">
                         <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Patients</div>
-                        <div class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['patients_count'] }}</div>
                     </div>
+                    <div class="text-3xl font-bold text-gray-900">{{ $stats['patients_count'] }}</div>
                 </div>
 
                 <!-- Appointments Card -->
                 <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 flex items-center transition hover:shadow-md">
-                    <div class="p-4 rounded-full mr-5" style="background-color: #eef2ff; color: #4f46e5;">
+                    <div class="p-4 rounded-full" style="background-color: #acc253ff; color: #4f46e5; margin-right: 24px;">
                         <!-- Changed Icon to Calendar -->
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                     </div>
-                    <div>
+                    <div class="flex-1">
                         <div class="text-sm font-medium text-gray-500 uppercase tracking-wide">Rendez-vous</div>
-                        <div class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['appointments_count'] }}</div>
                     </div>
+                    <div class="text-3xl font-bold text-gray-900">{{ $stats['appointments_count'] }}</div>
                 </div>
             </div>
 

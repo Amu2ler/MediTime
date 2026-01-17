@@ -51,6 +51,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/users', [\App\Http\Controllers\Admin\AdminController::class, 'users'])->name('admin.users');
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    Route::put('/users/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'update'])->name('admin.users.update');
     
     // Moved Specialty management to Admin
     Route::resource('specialties', SpecialtyController::class);

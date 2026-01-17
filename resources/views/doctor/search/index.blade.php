@@ -20,28 +20,36 @@
                         </p>
                     </header>
 
-                    <form method="GET" action="{{ route('doctor.search') }}" class="mt-6 space-y-6 md:space-y-0 md:grid md:grid-cols-3 md:gap-6">
-                        <div>
-                            <x-input-label for="specialty_id" :value="__('Spécialité')" />
-                            <select id="specialty_id" name="specialty_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">{{ __('Toutes les spécialités') }}</option>
-                                @foreach($specialties as $specialty)
-                                    <option value="{{ $specialty->id }}" {{ request('specialty_id') == $specialty->id ? 'selected' : '' }}>
-                                        {{ $specialty->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <form method="GET" action="{{ route('doctor.search') }}" class="mt-6">
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <x-input-label for="specialty_id" :value="__('Spécialité')" />
+                                <select id="specialty_id" name="specialty_id" 
+                                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        style="height: 48px;">
+                                    <option value="">{{ __('Toutes les spécialités') }}</option>
+                                    @foreach($specialties as $specialty)
+                                        <option value="{{ $specialty->id }}" {{ request('specialty_id') == $specialty->id ? 'selected' : '' }}>
+                                            {{ $specialty->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                        <div>
-                            <x-input-label for="city" :value="__('Ville')" />
-                            <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="request('city')" placeholder="Ex: Paris" />
-                        </div>
+                            <div class="flex-1">
+                                <x-input-label for="city" :value="__('Ville')" />
+                                <x-text-input id="city" name="city" type="text" 
+                                              class="mt-1 block w-full" 
+                                              style="height: 48px;"
+                                              :value="request('city')" placeholder="Ex: Paris" />
+                            </div>
 
-                        <div class="flex items-end">
-                            <x-primary-button class="w-full justify-center h-10">
-                                {{ __('Rechercher') }}
-                            </x-primary-button>
+                            <div>
+                                <x-input-label class="opacity-0 select-none" value="Search" />
+                                <x-primary-button class="mt-1 px-8" style="height: 48px; display: flex; align-items: center; justify-content: center;">
+                                    {{ __('Rechercher') }}
+                                </x-primary-button>
+                            </div>
                         </div>
                     <!-- Availability Filter (New) -->
                     <!-- Availability Filter (New) -->
@@ -228,7 +236,7 @@
                                     
                                     <div class="calendar-col">
                                         @forelse($daySlots as $slot)
-                                            <a href="{{ route('patient.booking.create', ['doctor' => $doctor->id, 'slot_id' => $slot->id, 'date' => $currentDate->toDateString()]) }}" 
+                                            <a href="{{ route('patient.booking.create', ['doctor' => $doctor->id, 'slot_id' => $slot->id, 'date' => $currentDate->toDateString(), 'reschedule_id' => request('reschedule_id')]) }}" 
                                                class="slot-pill bg-[#dcfce7] text-[#166534] hover:bg-[#bbf7d0]">
                                                 {{ $slot->start_time->format('H:i') }}
                                             </a>
