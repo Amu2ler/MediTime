@@ -17,7 +17,31 @@ class AdminController extends Controller
             'appointments_count' => Appointment::count(),
         ];
 
-        return view('admin.dashboard', compact('stats'));
+        // Chart Data: Appointments scheduled for the current week
+        $startOfWeek = now()->startOfWeek();
+        $endOfWeek = now()->endOfWeek();
+        
+        $appointments = Appointment::whereHas('slot', function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('start_time', [$startOfWeek, $endOfWeek]);
+        })->with('slot')->get();
+
+        $chartData = [
+            'labels' => [],
+            'data' => []
+        ];
+
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $chartData['labels'][] = ucfirst($date->translatedFormat('l d/m')); // Lundi 19/01
+            
+            $count = $appointments->filter(function ($appt) use ($date) {
+                return $appt->slot->start_time->isSameDay($date);
+            })->count();
+            
+            $chartData['data'][] = $count;
+        }
+
+        return view('admin.dashboard', compact('stats', 'chartData'));
     }
 
     public function users(Request $request)

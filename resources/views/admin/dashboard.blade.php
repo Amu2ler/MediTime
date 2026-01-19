@@ -57,6 +57,93 @@
                 </div>
             </div>
 
+            <!-- Statistics Chart -->
+            <div id="stats" class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 mb-10">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-gray-900">Évolution des Rendez-vous</h3>
+                    <span class="text-sm font-medium text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                        {{ now()->startOfWeek()->translatedFormat('d M') }} - {{ now()->endOfWeek()->translatedFormat('d M') }}
+                    </span>
+                </div>
+                <div class="h-80 w-full">
+                    <canvas id="appointmentsChart"></canvas>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx = document.getElementById('appointmentsChart').getContext('2d');
+                    
+                    // Gradient
+                    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                    gradient.addColorStop(0, 'rgba(5, 150, 222, 0.2)');
+                    gradient.addColorStop(1, 'rgba(5, 150, 222, 0)');
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: @json($chartData['labels']),
+                            datasets: [{
+                                label: 'Rendez-vous',
+                                data: @json($chartData['data']),
+                                borderColor: '#0596de',
+                                backgroundColor: gradient,
+                                borderWidth: 3,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: '#0596de',
+                                pointBorderWidth: 2,
+                                pointRadius: 6,
+                                pointHoverRadius: 8,
+                                pointHoverBorderWidth: 3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    titleColor: '#f8fafc',
+                                    bodyColor: '#f8fafc',
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    displayColors: false, 
+                                    intersect: false,
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: '#f1f5f9',
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        stepSize: 1,
+                                        font: { size: 11 }
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        font: { size: 12, weight: '500' },
+                                        color: '#64748b'
+                                    }
+                                }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'index',
+                            },
+                        }
+                    });
+                });
+            </script>
+
             <!-- Management Section -->
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4 mt-4">Gestion & Administration</h3>

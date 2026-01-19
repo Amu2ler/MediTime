@@ -45,6 +45,7 @@ Route::middleware(['auth', 'role:doctor'])->group(function () {
     Route::put('/doctor/profile', [DoctorProfileController::class, 'update'])->name('doctor.profile.update');
 
     Route::resource('doctor/slots', \App\Http\Controllers\SlotController::class);
+    Route::get('/doctor/patients', [\App\Http\Controllers\DoctorPatientController::class, 'index'])->name('doctor.patients.index');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

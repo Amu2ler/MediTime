@@ -20,7 +20,11 @@
                             <x-nav-link :href="route('slots.index')" :active="request()->routeIs('slots.index')">
                                 {{ __('Gérer mes disponibilités') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('doctor.patients.index')" :active="request()->routeIs('doctor.patients.index')">
+                                {{ __('Mes patients') }}
+                            </x-nav-link>
                         @endif
+
                         @unless(in_array(Auth::user()->role, ['doctor', 'admin']))
                             <x-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
                                 {{ __('Trouver un médecin') }}
@@ -105,7 +109,11 @@
                     <x-responsive-nav-link :href="route('slots.index')" :active="request()->routeIs('slots.index')">
                         {{ __('Gérer mes disponibilités') }}
                     </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('doctor.patients.index')" :active="request()->routeIs('doctor.patients.index')">
+                        {{ __('Mes patients') }}
+                    </x-responsive-nav-link>
                 @endif
+
                 @unless(in_array(Auth::user()->role, ['doctor', 'admin']))
                     <x-responsive-nav-link :href="route('doctor.search')" :active="request()->routeIs('doctor.search')">
                         {{ __('Trouver un médecin') }}
