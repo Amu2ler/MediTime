@@ -8,6 +8,8 @@
     <div class="py-12" x-data="{
         showEditModal: false,
         editForm: { id: null, name: '', email: '', role: '', address: '', city: '', zip_code: '' },
+        errors: {},
+        loading: false,
         editUser(user) {
             this.editForm = {
                 id: user.id,
@@ -18,10 +20,46 @@
                 city: user.doctor_profile ? user.doctor_profile.city : '',
                 zip_code: user.doctor_profile ? user.doctor_profile.zip_code : ''
             };
+            this.errors = {};
             this.showEditModal = true;
         },
         closeModal() {
             this.showEditModal = false;
+        },
+        async submitEdit() {
+            this.loading = true;
+            this.errors = {};
+            
+            try {
+                const response = await fetch('/admin/users/' + this.editForm.id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']').getAttribute('content')
+                    },
+                    body: JSON.stringify(this.editForm)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (response.status === 422) {
+                        this.errors = data.errors;
+                    } else {
+                        alert(data.message || 'Une erreur est survenue.');
+                    }
+                    return;
+                }
+
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Erreur réseau.');
+            } finally {
+                this.loading = false;
+            }
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -256,9 +294,7 @@
                          x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
                          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full">
                         
-                        <form method="POST" :action="'/admin/users/' + editForm.id">
-                            @csrf
-                            @method('PUT')
+                        <form @submit.prevent="submitEdit">
                             
                             <div class="bg-white px-6 pt-6 pb-6 sm:p-8">
                                 <div class="sm:flex sm:items-start">
@@ -283,6 +319,7 @@
                                                     x-model="editForm.name"
                                                     required
                                                 />
+                                                <p x-show="errors.name" x-text="errors.name" class="text-sm text-red-600 space-y-1 mt-2"></p>
                                             </div>
 
                                             <!-- Email -->
@@ -296,6 +333,7 @@
                                                     x-model="editForm.email"
                                                     required
                                                 />
+                                                <p x-show="errors.email" x-text="errors.email" class="text-sm text-red-600 space-y-1 mt-2"></p>
                                             </div>
 
                                             <!-- Role -->
@@ -310,6 +348,7 @@
                                                     <option value="patient">Patient</option>
                                                     <option value="doctor">Médecin</option>
                                                 </select>
+                                                <p x-show="errors.role" x-text="errors.role" class="text-sm text-red-600 space-y-1 mt-2"></p>
                                             </div>
 
                                             <!-- Address (Doctors Only) -->
@@ -326,22 +365,29 @@
                                                         placeholder="Adresse"
                                                         x-model="editForm.address"
                                                     />
+                                                    <p x-show="errors.address" x-text="errors.address" class="text-sm text-red-600 space-y-1 mt-2"></p>
 
                                                     <div class="grid grid-cols-2 gap-6 mt-3">
-                                                        <x-text-input
-                                                            name="city"
-                                                            type="text"
-                                                            class="block w-full mt-3"
-                                                            placeholder="Ville"
-                                                            x-model="editForm.city"
-                                                        />
-                                                        <x-text-input
-                                                            name="zip_code"
-                                                            type="text"
-                                                            class="block w-full mt-3"
-                                                            placeholder="Code postal"
-                                                            x-model="editForm.zip_code"
-                                                        />
+                                                        <div>
+                                                            <x-text-input
+                                                                name="city"
+                                                                type="text"
+                                                                class="block w-full"
+                                                                placeholder="Ville"
+                                                                x-model="editForm.city"
+                                                            />
+                                                            <p x-show="errors.city" x-text="errors.city" class="text-sm text-red-600 space-y-1 mt-2"></p>
+                                                        </div>
+                                                        <div>
+                                                            <x-text-input
+                                                                name="zip_code"
+                                                                type="text"
+                                                                class="block w-full"
+                                                                placeholder="Code postal"
+                                                                x-model="editForm.zip_code"
+                                                            />
+                                                            <p x-show="errors.zip_code" x-text="errors.zip_code" class="text-sm text-red-600 space-y-1 mt-2"></p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </template>
@@ -351,11 +397,12 @@
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 flex gap-3 mt-3">
-                                <x-primary-button class="w-full justify-center gap-3">
-                                    Enregistrer
+                                <x-primary-button class="w-full justify-center gap-3" ::disabled="loading">
+                                    <span x-show="loading">Chargement...</span>
+                                    <span x-show="!loading">Enregistrer</span>
                                 </x-primary-button>
 
-                                <x-secondary-button class="w-full justify-center" @click="closeModal">
+                                <x-secondary-button class="w-full justify-center" @click="closeModal" type="button">
                                     Annuler
                                 </x-secondary-button>
                             </div>
