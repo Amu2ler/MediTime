@@ -61,7 +61,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <!-- We could add a 'View History' button later -->
-                                                <button class="text-indigo-600 hover:text-indigo-900">Historique</button>
+                                                <button class="text-indigo-600 hover:text-indigo-900"> </button>
                                             </td>
                                         </tr>
                                     @endforeach
