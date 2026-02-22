@@ -97,6 +97,6 @@ class DoctorProfileController extends Controller
 
         $profile->update($data);
 
-        return redirect()->route('dashboard')->with('success', 'Profil médecin mis à jour.');
+        return redirect()->route('doctor.profile.edit')->with('status', 'doctor-profile-updated');
     }
 }

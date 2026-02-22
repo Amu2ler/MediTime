@@ -20,7 +20,7 @@
             <div class="flex flex-col lg:flex-row items-start justify-center gap-32">
                 
                 <!-- Left Column: Reason Selection (Main) -->
-                <div class="w-full lg:max-sm">
+                <div class="w-full flex-1">
 
 
                     <div class="bg-white shadow rounded-lg p-6 mb-6">

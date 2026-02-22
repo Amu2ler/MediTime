@@ -108,11 +108,13 @@
                                     </div>
 
                                     <div class="flex items-center gap-3 mt-auto pt-4 border-t border-gray-100">
-                                        <a href="{{ route('doctor.search', ['doctor_id' => $appointment->slot->user->doctorProfile->id, 'reschedule_id' => $appointment->id]) }}" 
+                                        @if($appointment->slot->user->doctorProfile)
+                                        <a href="{{ route('doctor.search', ['doctor_id' => $appointment->slot->user->doctorProfile->id, 'reschedule_id' => $appointment->id]) }}"
                                            class="flex-1 text-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-bold hover:bg-indigo-100 transition-colors"
                                            style="text-align: center;">
                                             Modifier
                                         </a>
+                                        @endif
 
                                         <form method="POST" action="{{ route('appointments.destroy', $appointment) }}" class="flex-1">
                                             @csrf

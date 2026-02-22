@@ -92,9 +92,9 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|in:doctor,patient',
-            'address' => 'nullable|required_if:role,doctor|string|max:255',
-            'city' => 'nullable|required_if:role,doctor|string|max:255',
-            'zip_code' => 'nullable|required_if:role,doctor|string|max:20',
+            'address' => 'required_if:role,doctor|string|max:255',
+            'city' => 'required_if:role,doctor|string|max:255',
+            'zip_code' => 'required_if:role,doctor|string|max:20',
         ]);
 
         // 3. Update User

@@ -17,6 +17,7 @@ class DoctorProfile extends Model
         'address',
         'city',
         'zip_code',
+        'certificate_path',
     ];
 
     public function user()

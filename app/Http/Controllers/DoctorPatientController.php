@@ -18,22 +18,22 @@ class DoctorPatientController extends Controller
         $appointments = Appointment::whereHas('slot', function ($query) use ($doctor) {
             $query->where('user_id', $doctor->id);
         })
-        ->with('patient') // Eager load patient
+        ->with(['patient', 'slot']) // Eager load patient and slot to avoid N+1
         ->get();
 
         // 2. Group by patient_id to get unique patients
         // We also want to calculate stats: Last appointment, Total appointments.
         $patients = $appointments->groupBy('patient_id')->map(function ($patientAppointments) {
             $patient = $patientAppointments->first()->patient;
-            
+            $sorted = $patientAppointments->sortByDesc('slot.start_time');
+
             return [
                 'id' => $patient->id,
                 'name' => $patient->name,
                 'email' => $patient->email,
-                'phone' => $patient->doctorProfile->phone ?? 'N/A', // Assuming patient might have profile or not? Patients usually don't have doctorProfile. Just name/email.
                 'total_appointments' => $patientAppointments->count(),
-                'last_appointment' => $patientAppointments->sortByDesc('slot.start_time')->first()->slot->start_time,
-                'appointments' => $patientAppointments->sortByDesc('slot.start_time') // Full history if needed
+                'last_appointment' => $sorted->first()->slot->start_time,
+                'appointments' => $sorted, // Full history: desc order (last() gives oldest = "patient since")
             ];
         })->sortByDesc('last_appointment'); // Sort list by most recent interaction
 

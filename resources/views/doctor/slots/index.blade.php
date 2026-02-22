@@ -217,7 +217,7 @@
                                         <!-- Delete Action on Click -->
                                         <button type="button" 
                                                 class="slot-pill free"
-                                                @click="$dispatch('set-action-delete-slot', '{{ url('/slots') }}/{{ $slot->id }}'); $dispatch('open-modal-delete-slot')">
+                                                @click="$dispatch('set-action-delete-slot', '{{ route('slots.destroy', $slot) }}'); $dispatch('open-modal-delete-slot')">
                                             <span>{{ $slot->start_time->format('H:i') }}</span>
                                             <span class="delete-overlay">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

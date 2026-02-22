@@ -79,7 +79,7 @@ class SpecialtyController extends Controller
             'name' => $request->name,
         ]);
 
-        return redirect()->route('specialties.index')->with('warning', 'Spécialité modifiée avec succès.');
+        return redirect()->route('specialties.index')->with('success', 'Spécialité modifiée avec succès.');
     }
 
     /**
@@ -94,6 +94,6 @@ class SpecialtyController extends Controller
 
         $specialty->delete();
 
-        return redirect()->route('specialties.index')->with('danger', 'Spécialité supprimée avec succès.');
+        return redirect()->route('specialties.index')->with('success', 'Spécialité supprimée avec succès.');
     }
 }
